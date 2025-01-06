@@ -2,7 +2,11 @@ package main
 
 import (
 	"errors"
+	"fmt"
+	"os"
 	"time"
+
+	"github.com/olekukonko/tablewriter"
 )
 
 type Todo struct {
@@ -19,6 +23,7 @@ type TodoManager interface {
 	CompleteTodo(int) error
 	ClearTodos()
 	EditTodo(int, string) error
+	PrintTodosTable()
 }
 
 type Todos []Todo
@@ -80,4 +85,34 @@ func (todos *Todos) EditTodo(id int, title string) error {
 	}
 
 	return errors.New("invalid id")
+}
+func (todos *Todos) PrintTodosTable() {
+
+	
+	table := tablewriter.NewWriter(os.Stdout)
+	table.SetHeader([]string{"ID", "Title", "Is Completed", "Created At", "Completed At"})
+
+	for _, todo := range *todos {
+		var completedAtStr string = ""
+		if todo.CompletedAt != nil {
+			completedAtStr = todo.CompletedAt.Format("Mon, 02 May 2001 15:04:05")
+		}
+
+		createdAtStr := todo.CreatedAt.Format("Mon, 02 May 2001 15:04:05")
+		var isCompletedStr string = "❌"
+
+		if todo.IsCompleted {
+			isCompletedStr = "✅"
+		}
+
+		table.Append([]string{
+			fmt.Sprintf("%d", todo.ID),
+			todo.Title,
+			isCompletedStr,
+			createdAtStr,
+			completedAtStr,
+		})
+	}
+
+	table.Render()
 }

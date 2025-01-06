@@ -1,26 +1,22 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+)
 
 func main() {
+	var todoManager TodoManager = &Todos{}
 
-	var todos TodoManager = &Todos{}
+	storage := NewStorage[Todos]("todo.json")
 
-	todos.AddTodo("Fuck this bro")
-	todos.AddTodo("Spongeboob")
-	todos.AddTodo("Cool")
-	fmt.Println(todos)
-	todos.EditTodo(1, "updated todo")
-	// // err := todos.DeleteTodo(3)
-	// // if err != nil {
-	// // fmt.Println(err.Error())
-	// // }
-	// err := todos.CompleteTodo(5)
-	// if err != nil {
-	// fmt.Println(err.Error())
-	// }
-	// todos.ClearTodos()
-	// todos.ClearTodos()
-	fmt.Println(todos)
+	if err := storage.Load(todoManager.(*Todos)); err != nil {
+		fmt.Println("Error loading todos:", err)
+		return
+	}
 
+	todoManager.PrintTodosTable()
+
+	if err := storage.Save(todoManager.(*Todos)); err != nil {
+		fmt.Println("Error saving todos:", err)
+	}
 }
