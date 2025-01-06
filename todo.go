@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"os"
 	"time"
-
 	"github.com/olekukonko/tablewriter"
 )
 
@@ -20,7 +19,7 @@ type Todo struct {
 type TodoManager interface {
 	AddTodo(string)
 	DeleteTodo(int) error
-	CompleteTodo(int) error
+	ToggleTodo(int) error
 	ClearTodos()
 	EditTodo(int, string) error
 	PrintTodosTable()
@@ -55,14 +54,14 @@ func (todos *Todos) DeleteTodo(id int) error {
 
 }
 
-func (todos *Todos) CompleteTodo(id int) error {
+func (todos *Todos) ToggleTodo(id int) error {
 
 	completionTime := time.Now()
 
 	for index, todo := range *todos {
 		if id == todo.ID {
 			(*todos)[index].CompletedAt = &completionTime
-			(*todos)[index].IsCompleted = true
+			(*todos)[index].IsCompleted = !(*todos)[index].IsCompleted
 			return nil
 		}
 	}
@@ -72,7 +71,7 @@ func (todos *Todos) CompleteTodo(id int) error {
 }
 
 func (todos *Todos) ClearTodos() {
-	(*todos) = nil
+	(*todos) = make(Todos, 0)
 }
 
 func (todos *Todos) EditTodo(id int, title string) error {
@@ -88,7 +87,6 @@ func (todos *Todos) EditTodo(id int, title string) error {
 }
 func (todos *Todos) PrintTodosTable() {
 
-	
 	table := tablewriter.NewWriter(os.Stdout)
 	table.SetHeader([]string{"ID", "Title", "Is Completed", "Created At", "Completed At"})
 

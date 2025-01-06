@@ -14,7 +14,8 @@ func main() {
 		return
 	}
 
-	todoManager.PrintTodosTable()
+	cmdFlags := NewCmdFlags()
+	cmdFlags.ExecuteCommand(todoManager.(*Todos))
 
 	if err := storage.Save(todoManager.(*Todos)); err != nil {
 		fmt.Println("Error saving todos:", err)
